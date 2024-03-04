@@ -74,6 +74,10 @@ set<int> makeSet(string link) {
 	return toronto;
 }
 
+void query2(string link, map<int, set<string>> purchase) {
+	
+}
+
 int main(int argc, char** argv) {
     if (string(argv[1]) == "q1") {
 		ifstream customer_table(argv[2]);
@@ -113,8 +117,31 @@ int main(int argc, char** argv) {
 
 		//std::ifstream table(argv[3]);
 	}
-	else if (std::string(argv[1]) == "q2") {
-		std::cout << "query2\n";
+	else if (string(argv[1]) == "q2") {
+		ifstream lineitem_table(argv[2]);
+		string attributeLine;
+		string lengthLine;
+
+		getline(customer_table, attributeLine);
+		getline(customer_table, lengthLine);
+
+		// 1. attribute들의 길이 정보를 먼저 파악한다.
+		// stringstream을 활용해 파싱하지 않고, substring으로 파싱할 예정
+		map<int, int> length = getLength(lengthLine);
+
+		int UNAME_offset = attributeLine.find("UNAME");
+		int BARCODE_offset = attributeLine.find("BARCODE");
+
+		map<int, set<string>> purchase;
+		string line;
+		while(getline(lineitem_table, line)) {
+			string uname = removeRightBlank(line.substr(UNAME_offset, length[UNAME_offset]));
+			int barcode = stoi(removeRightBlank(line.substr(BARCODE_offset, length[BARCODE_offset])));
+
+			purchase[barcode].insert(uname);
+		}
+
+		query2(argv[3], purchase);
 	}
 
     return 0;
