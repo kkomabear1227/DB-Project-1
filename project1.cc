@@ -8,92 +8,77 @@
 #include <vector>
 #include <utility>
 
-//Problem: 공백이 2칸 이상이면 stringstream을 활용한 파싱이 이상하게 됨
-std::string removeDuplicateBlank(std::string str) {
-	int p = 0;
-	//앞에 blank를 다 지운다.
-	while(p < str.size() && str[p] == ' ') p++;
+using namespace std;
 
-	std::string ret = "";
-	if (p != str.size()) {
-		ret += str[p];
-		p++;
-	}
+#define X first
+#define Y second
 
-	// 가운데 blank는 하나만 남긴다.
-	for (int i = p; i<str.size(); i++) {
-		if (str[i] == ' ') {
-			if (ret[ret.size() - 1] != ' ') ret = ret + " ";
-		}
-		else {
-			ret = ret + str[i];
-		}
-	}
+string removeRightBlank(string str) {
+	cout << str << ' ';
+	cout << str[1] << '\n';
+	int idx = str.size() - 1;
+	while(idx >= 0 && str[idx] == ' ') idx--;
 
-	//뒤에 blank도 다 지운다.
-	if (ret[ret.size() - 1] == ' ') ret = ret.substr(0, ret.size() - 1);
+	cout << idx << '\n';
 
-	return ret;
+	return str.substr(0, idx + 1);
 }
 
-std::vector<std::string> getAttribute(char* link) {
-	std::ifstream customer_table(link);
-	std::string line;
+vector<pair<int, int>> getLength(string lengthLine) {
+	stringstream ss(lengthLine);
 
-	getline(customer_table, line);
-	line = removeDuplicateBlank(line);
-	std::stringstream ss(line);
-
-	std::vector<std::string> attribute;
-	std::string col;
-
-	while (getline(ss, col, ' ')) {
-		//std::cout << col << '\n';
-		attribute.push_back(col);
-	}
-
-	if (attribute[12] == "ACTIVE") std::cout << "Hi\n";
-
-	// for (auto x : attribute) {
-	// 	std::cout << x << "i\n";
-	// 	std::cout << x << "/\n";
-	// }
-	// std::cout << '\n';
-
-	return attribute;
-}
-
-std::vector<std::pair<int, int>> getLength(char* link) {
-	std::ifstream customer_table(link);
-	std::string line;
-
-	getline(customer_table, line);
-	line = removeDuplicateBlank(line);
-	std::stringstream ss2(line);
-
-	//std::cout << line << '\n';		
-	std::vector<std::pair<int, int>> length;
-	std::string len;
+	vector<pair<int, int>> length;
+	string len;
 	int pos = 0;
 
-	while (getline(ss2, len, ' ')) {
-		//std::cout << len << '\n';
+	while (getline(ss, len, ' ')) {
+		//cout << len << '\n';
 		length.push_back({pos, len.size()});
 		pos += len.size() + 1;
 	}
 
-	for (auto x : length) {
-		std::cout << x.first << ' ' << x.second << '/';
-	}
-	std::cout << '\n';
+	// for (auto x : length) {
+	// 	cout << x.first << ' ' << x.second << "\n";
+	// }
 	
 	return length;
 }
 
+int findAttribute(string attributeLine, string targetAttribute, vector<pair<int, int>> length) {
+	for (int i = 0; i<length.size(); i++) {
+		string tmp = attributeLine.substr(length[i].X, length[i].Y);
+		tmp = removeRightBlank(tmp);
+
+		cout << tmp << ' ' << targetAttribute << '\n';
+		if (tmp == targetAttribute) return i;
+	}
+	return -1;
+}
+
 int main(int argc, char** argv) {
-    if (std::string(argv[1]) == "q1") {
-        std::vector<std::string> attribute = getAttribute(argv[2]);
-		std::vector<std::pair<int, int>> length = getLength(argv[2]);
+    if (string(argv[1]) == "q1") {
+		ifstream customer_table(argv[2]);
+		string attributeLine;
+		string lengthLine;
+
+		getline(customer_table, attributeLine);
+		getline(customer_table, lengthLine);
+
+		// 1. attribute들의 길이 정보를 먼저 파악한다.
+		// stringstream을 활용해 파싱하지 않고, substring으로 파싱할 예정
+		vector<pair<int, int>> length = getLength(lengthLine);
+		
+		// 2. ZONE과 ACTIVE attribute를 보려면 어디 부분을 substring으로 잡아야하는지 파악
+		// ZONE_idx, ACTIVE_idx는 length 테이블을 볼 때 사용할 index
+		int ZONE_idx = findAttribute(attributeLine, "ZONE", length);
+		int ACTIVE_idx = findAttribute(attributeLine, "ACTIVE", length);
+
+		cout << ZONE_idx << ' ' << ACTIVE_idx << '\n';
+
+		// 3. Zonecost table을 바탕으로 set<int> toronto를 만든다.
+		// set<int> toronto = makeSet(argv[3]);
+
+		// 4. 남은 Customer table을 보며 ACTIVE가 켜져있는지, ZONE이 toronto인지 확인 후 출력
 
 		//std::ifstream table(argv[3]);
 	}
