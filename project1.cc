@@ -89,9 +89,10 @@ int main(int argc, char** argv) {
 		
 		// 2. ZONE과 ACTIVE attribute를 보려면 어디 부분을 substring으로 잡아야하는지 파악
 		// ZONE_offset, ACTIVE_offset은 length 테이블을 볼 때 사용할 index
-		//
+		// LNAME_offset도 필요 (출력에)
 		int ZONE_offset = attributeLine.find("ZONE");
 		int ACTIVE_offset = attributeLine.find("ACTIVE");
+		int LNAME_offset = attributeLine.find("LNAME");
 
 		//cout << ZONE_offset << ' ' << ACTIVE_offset << '\n';
 		//cout << length[ZONE_offset] << ' ' << length[ACTIVE_offset] << '\n';
@@ -102,11 +103,11 @@ int main(int argc, char** argv) {
 		// 4. 남은 Customer table을 보며 ACTIVE가 켜져있는지, ZONE이 toronto인지 확인 후 출력
 		string query;
 		while (getline(customer_table, query)) {
-			int zone = stoi(removeRightBlank(line.substr(ZONE_offset, length[ZONE_offset])));
-			int active = stoi(removeRightBlank(line.substr(ACTIVE_offset, length[ACTIVE_offset])));
+			int zone = stoi(removeRightBlank(query.substr(ZONE_offset, length[ZONE_offset])));
+			int active = stoi(removeRightBlank(query.substr(ACTIVE_offset, length[ACTIVE_offset])));
 
 			if (active && toronto.find(zone) != toronto.end()) {
-				cout <<
+				cout << removeRightBlank(query.substr(LNAME_offset, length[LNAME_offset])) << '\n';
 			}
 		}
 

@@ -50,7 +50,7 @@ echo "Checking query 1"
 for test_folder in q1/*/; do
     echo -e "\n-----Run ${test_folder}-----"
 
-    ${path}project1 q1 ${test_folder}customer.txt ${test_folder}zonecost.txt #> ${temp_file}
+    ${path}project1 q1 ${test_folder}customer.txt ${test_folder}zonecost.txt > ${temp_file}
 
     full_score=$( expr ${full_score} + 1 )
     test_name=${test_folder}
