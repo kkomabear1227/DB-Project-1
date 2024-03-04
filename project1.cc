@@ -75,7 +75,26 @@ set<int> makeSet(string link) {
 }
 
 void query2(string link, map<int, set<string>> purchase) {
-	
+	ifstream product_table(link);
+	string attributeLine;
+	string lengthLine;
+
+	getline(product_table, attributeLine);
+	getline(product_table, lengthLine);
+
+	// 1. attribute들의 길이 정보 파악
+	map<int, int> length = getLength(lengthLine);
+
+	int BARCODE_offset = attributeLine.find("BARCODE");
+	int PRODDESC_offset = attributeLine.find("PRODDESC");
+
+	string query;
+	while(getline(product_table, query)) {
+		int barcode = stoi(removeRightBlank(query.substr(BARCODE_offset, length[BARCODE_offset])));
+		string proddesc = removeRightBlank(query.substr(PRODDESC_offset, length[PRODDESC_offset]));
+
+		if (purchase[barcode].size() >= 2) cout << barcode << ' ' << proddesc << '\n';
+	}
 }
 
 int main(int argc, char** argv) {
@@ -122,8 +141,8 @@ int main(int argc, char** argv) {
 		string attributeLine;
 		string lengthLine;
 
-		getline(customer_table, attributeLine);
-		getline(customer_table, lengthLine);
+		getline(lineitem_table, attributeLine);
+		getline(lineitem_table, lengthLine);
 
 		// 1. attribute들의 길이 정보를 먼저 파악한다.
 		// stringstream을 활용해 파싱하지 않고, substring으로 파싱할 예정
