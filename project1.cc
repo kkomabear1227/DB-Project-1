@@ -13,27 +13,16 @@ using namespace std;
 #define X first
 #define Y second
 
-string removeRightBlank(string str) {
-	cout << str << ' ';
-	cout << str[1] << '\n';
-	int idx = str.size() - 1;
-	while(idx >= 0 && str[idx] == ' ') idx--;
-
-	cout << idx << '\n';
-
-	return str.substr(0, idx + 1);
-}
-
-vector<pair<int, int>> getLength(string lengthLine) {
+map<int, int> getLength(string lengthLine) {
 	stringstream ss(lengthLine);
 
-	vector<pair<int, int>> length;
+	map<int, int> length;
 	string len;
 	int pos = 0;
 
 	while (getline(ss, len, ' ')) {
 		//cout << len << '\n';
-		length.push_back({pos, len.size()});
+		length[pos] = len.size();
 		pos += len.size() + 1;
 	}
 
@@ -42,17 +31,6 @@ vector<pair<int, int>> getLength(string lengthLine) {
 	// }
 	
 	return length;
-}
-
-int findAttribute(string attributeLine, string targetAttribute, vector<pair<int, int>> length) {
-	for (int i = 0; i<length.size(); i++) {
-		string tmp = attributeLine.substr(length[i].X, length[i].Y);
-		tmp = removeRightBlank(tmp);
-
-		cout << tmp << ' ' << targetAttribute << '\n';
-		if (tmp == targetAttribute) return i;
-	}
-	return -1;
 }
 
 int main(int argc, char** argv) {
@@ -66,14 +44,15 @@ int main(int argc, char** argv) {
 
 		// 1. attribute들의 길이 정보를 먼저 파악한다.
 		// stringstream을 활용해 파싱하지 않고, substring으로 파싱할 예정
-		vector<pair<int, int>> length = getLength(lengthLine);
+		map<int, int> length = getLength(lengthLine);
 		
 		// 2. ZONE과 ACTIVE attribute를 보려면 어디 부분을 substring으로 잡아야하는지 파악
-		// ZONE_idx, ACTIVE_idx는 length 테이블을 볼 때 사용할 index
-		int ZONE_idx = findAttribute(attributeLine, "ZONE", length);
-		int ACTIVE_idx = findAttribute(attributeLine, "ACTIVE", length);
+		// ZONE_offset, ACTIVE_offset은 length 테이블을 볼 때 사용할 index
+		int ZONE_offset = attributeLine.find("ZONE");
+		int ACTIVE_offset = attributeLine.find("ACTIVE");
 
-		cout << ZONE_idx << ' ' << ACTIVE_idx << '\n';
+		//cout << ZONE_offset << ' ' << ACTIVE_offset << '\n';
+		//cout << length[ZONE_offset] << ' ' << length[ACTIVE_offset] << '\n';
 
 		// 3. Zonecost table을 바탕으로 set<int> toronto를 만든다.
 		// set<int> toronto = makeSet(argv[3]);
